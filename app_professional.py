@@ -654,221 +654,97 @@ def main():
     # Flowchart when no image uploaded
     if uploaded_file is None:
         st.markdown("""
-            <div style='
-                background: linear-gradient(135deg, rgba(25,118,210,0.08) 0%, rgba(13,71,161,0.04) 100%);
-                padding: 40px 30px;
-                border-radius: 18px;
-                border: 3px solid rgba(25,118,210,0.3);
-                margin: 30px 0;
-            '>
-                <h2 style='color: #1565C0; margin: 0 0 35px 0; font-weight: 900; font-size: 1.9rem; text-align: center;'>
-                    Quy trình phân tích AI
-                </h2>
-                
-                <!-- Flowchart -->
-                <div style='max-width: 900px; margin: 0 auto;'>
-                    <!-- Step 1 -->
-                    <div style='display: flex; align-items: center; margin: 25px 0;'>
-                        <div style='
-                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
-                            color: white;
-                            width: 70px;
-                            height: 70px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 2rem;
-                            font-weight: 900;
-                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
-                            flex-shrink: 0;
-                        '>①</div>
-                        <div style='
-                            flex: 1;
-                            background: white;
-                            padding: 20px 25px;
-                            margin-left: 20px;
-                            border-radius: 12px;
-                            border-left: 5px solid #1976D2;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                        '>
-                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Chuẩn bị ảnh</h3>
-                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
-                                Chụp ảnh vùng da cần kiểm tra với độ phân giải cao, ánh sáng đầy đủ, tập trung vào vùng tổn thương
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Arrow Down -->
-                    <div style='text-align: center; margin: 15px 0;'>
-                        <div style='
-                            display: inline-block;
-                            color: #1976D2;
-                            font-size: 2.5rem;
-                            line-height: 1;
-                        '>▼</div>
-                    </div>
-                    
-                    <!-- Step 2 -->
-                    <div style='display: flex; align-items: center; margin: 25px 0;'>
-                        <div style='
-                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
-                            color: white;
-                            width: 70px;
-                            height: 70px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 2rem;
-                            font-weight: 900;
-                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
-                            flex-shrink: 0;
-                        '>②</div>
-                        <div style='
-                            flex: 1;
-                            background: white;
-                            padding: 20px 25px;
-                            margin-left: 20px;
-                            border-radius: 12px;
-                            border-left: 5px solid #1976D2;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                        '>
-                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Tải ảnh lên hệ thống</h3>
-                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
-                                Nhấn "Browse files" ở trên để chọn ảnh từ thiết bị (JPG, PNG, JPEG)
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Arrow Down -->
-                    <div style='text-align: center; margin: 15px 0;'>
-                        <div style='
-                            display: inline-block;
-                            color: #1976D2;
-                            font-size: 2.5rem;
-                            line-height: 1;
-                        '>▼</div>
-                    </div>
-                    
-                    <!-- Step 3 -->
-                    <div style='display: flex; align-items: center; margin: 25px 0;'>
-                        <div style='
-                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
-                            color: white;
-                            width: 70px;
-                            height: 70px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 2rem;
-                            font-weight: 900;
-                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
-                            flex-shrink: 0;
-                        '>③</div>
-                        <div style='
-                            flex: 1;
-                            background: white;
-                            padding: 20px 25px;
-                            margin-left: 20px;
-                            border-radius: 12px;
-                            border-left: 5px solid #1976D2;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                        '>
-                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>AI phân tích tự động</h3>
-                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
-                                Model HybridViT xử lý ảnh qua CNN + Vision Transformer + CBAM trong vài giây
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Arrow Down -->
-                    <div style='text-align: center; margin: 15px 0;'>
-                        <div style='
-                            display: inline-block;
-                            color: #1976D2;
-                            font-size: 2.5rem;
-                            line-height: 1;
-                        '>▼</div>
-                    </div>
-                    
-                    <!-- Step 4 -->
-                    <div style='display: flex; align-items: center; margin: 25px 0;'>
-                        <div style='
-                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
-                            color: white;
-                            width: 70px;
-                            height: 70px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 2rem;
-                            font-weight: 900;
-                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
-                            flex-shrink: 0;
-                        '>④</div>
-                        <div style='
-                            flex: 1;
-                            background: white;
-                            padding: 20px 25px;
-                            margin-left: 20px;
-                            border-radius: 12px;
-                            border-left: 5px solid #1976D2;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                        '>
-                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Nhận kết quả chi tiết</h3>
-                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
-                                Xem loại tổn thương, độ tin cậy, top 5 dự đoán, biểu đồ phân tích và thông tin y tế
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Arrow Down -->
-                    <div style='text-align: center; margin: 15px 0;'>
-                        <div style='
-                            display: inline-block;
-                            color: #FF9800;
-                            font-size: 2.5rem;
-                            line-height: 1;
-                        '>▼</div>
-                    </div>
-                    
-                    <!-- Step 5 -->
-                    <div style='display: flex; align-items: center; margin: 25px 0;'>
-                        <div style='
-                            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-                            color: white;
-                            width: 70px;
-                            height: 70px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 2rem;
-                            font-weight: 900;
-                            box-shadow: 0 4px 15px rgba(255,152,0,0.4);
-                            flex-shrink: 0;
-                        '>⚕</div>
-                        <div style='
-                            flex: 1;
-                            background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,152,0,0.1) 100%);
-                            padding: 20px 25px;
-                            margin-left: 20px;
-                            border-radius: 12px;
-                            border-left: 5px solid #FF9800;
-                            box-shadow: 0 2px 8px rgba(255,152,0,0.2);
-                        '>
-                            <h3 style='color: #E65100; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Tham khảo bác sĩ</h3>
-                            <p style='color: #E65100; margin: 0; line-height: 1.6; font-weight: 600;'>
-                                Kết quả AI chỉ mang tính tham khảo. Luôn tham khảo bác sĩ da liễu để chẩn đoán chính xác
-                            </p>
-                        </div>
-                    </div>
+            <h2 style='color: #1565C0; margin: 20px 0 25px 0; font-weight: 900; font-size: 1.5rem; text-align: center;'>
+                Quy trình phân tích AI
+            </h2>
+        """, unsafe_allow_html=True)
+        
+        # Horizontal flowchart
+        cols = st.columns([1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1])
+        
+        with cols[0]:
+            st.markdown("""
+                <div style='
+                    background: white;
+                    padding: 12px 10px;
+                    border-radius: 10px;
+                    border-top: 4px solid #1976D2;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    text-align: center;
+                '>
+                    <h4 style='color: #1565C0; margin: 0; font-size: 0.95rem; font-weight: 800;'>Chuẩn bị ảnh</h4>
                 </div>
-            </div>
-            
+            """, unsafe_allow_html=True)
+        
+        with cols[1]:
+            st.markdown("<div style='text-align: center; padding-top: 10px; color: #1976D2; font-size: 1.3rem;'>→</div>", unsafe_allow_html=True)
+        
+        with cols[2]:
+            st.markdown("""
+                <div style='
+                    background: white;
+                    padding: 12px 10px;
+                    border-radius: 10px;
+                    border-top: 4px solid #1976D2;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    text-align: center;
+                '>
+                    <h4 style='color: #1565C0; margin: 0; font-size: 0.95rem; font-weight: 800;'>Tải ảnh lên</h4>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[3]:
+            st.markdown("<div style='text-align: center; padding-top: 10px; color: #1976D2; font-size: 1.3rem;'>→</div>", unsafe_allow_html=True)
+        
+        with cols[4]:
+            st.markdown("""
+                <div style='
+                    background: white;
+                    padding: 12px 10px;
+                    border-radius: 10px;
+                    border-top: 4px solid #1976D2;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    text-align: center;
+                '>
+                    <h4 style='color: #1565C0; margin: 0; font-size: 0.95rem; font-weight: 800;'>AI phân tích</h4>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[5]:
+            st.markdown("<div style='text-align: center; padding-top: 10px; color: #1976D2; font-size: 1.3rem;'>→</div>", unsafe_allow_html=True)
+        
+        with cols[6]:
+            st.markdown("""
+                <div style='
+                    background: white;
+                    padding: 12px 10px;
+                    border-radius: 10px;
+                    border-top: 4px solid #1976D2;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    text-align: center;
+                '>
+                    <h4 style='color: #1565C0; margin: 0; font-size: 0.95rem; font-weight: 800;'>Nhận kết quả</h4>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[7]:
+            st.markdown("<div style='text-align: center; padding-top: 10px; color: #FF9800; font-size: 1.3rem;'>→</div>", unsafe_allow_html=True)
+        
+        with cols[8]:
+            st.markdown("""
+                <div style='
+                    background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,152,0,0.1) 100%);
+                    padding: 12px 10px;
+                    border-radius: 10px;
+                    border-top: 4px solid #FF9800;
+                    box-shadow: 0 2px 6px rgba(255,152,0,0.2);
+                    text-align: center;
+                '>
+                    <h4 style='color: #E65100; margin: 0; font-size: 0.95rem; font-weight: 800;'>Tham khảo bác sĩ</h4>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
             <div style='
                 background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,152,0,0.05) 100%);
                 padding: 25px;
@@ -987,7 +863,7 @@ def main():
                 )
         
         # Detailed analysis - compact header
-        st.markdown("""<div style='margin: 20px 0 10px 0;'><h3 style='color: #1565C0; text-align: center; font-weight: 700;'>▤ Phân tích chi tiết</h3></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style='margin: 20px 0 10px 0;'><h3 style='color: #1565C0; text-align: center; font-weight: 700;'>Phân tích chi tiết</h3></div>""", unsafe_allow_html=True)
         
         tab1, tab2, tab3 = st.tabs(["Tất cả các loại", "Top 5 dự đoán", "Thông tin bệnh"])
         
