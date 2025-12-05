@@ -1,8 +1,6 @@
 # Skin Cancer AI Detection System
 
-## Hệ thống Phát hiện Ung thư Da bằng AI
-
-Ứng dụng web chuyên nghiệp sử dụng Deep Learning để phân loại 9 loại tổn thương da với độ chính xác cao, dựa trên kiến trúc **HybridViT** (CNN + Vision Transformer).
+AI-powered web application using Deep Learning to classify 9 types of skin lesions with high accuracy, based on **HybridViT** architecture (CNN + Vision Transformer).
 
 ---
 
@@ -20,36 +18,36 @@ graph LR
 
 ---
 
-## Tính năng
+## Features
 
-### Phân loại 9 loại tổn thương da:
-1. Actinic Keratosis (Sừng hóa quang hóa)
-2. Basal Cell Carcinoma (Ung thư tế bào đáy)
-3. Dermatofibroma (U xơ da)
-4. Melanoma (U hắc tố ác tính)
-5. Nevus (Nốt ruồi)
-6. Pigmented Benign Keratosis (Sừng hóa lành tính có sắc tố)
-7. Seborrheic Keratosis (Sừng hóa tiết bã)
-8. Squamous Cell Carcinoma (Ung thư tế bào vảy)
-9. Vascular Lesion (Tổn thương mạch máu)
+### Classification of 9 Skin Lesion Types:
+1. Actinic Keratosis
+2. Basal Cell Carcinoma
+3. Dermatofibroma
+4. Melanoma
+5. Nevus
+6. Pigmented Benign Keratosis
+7. Seborrheic Keratosis
+8. Squamous Cell Carcinoma
+9. Vascular Lesion
 
-### Giao diện:
-- Thiết kế chuyên nghiệp với màu xanh dương
-- Biểu đồ tương tác (Plotly)
-- Gauge chart hiển thị độ tin cậy
-- Top 5 dự đoán với xác suất
-- Thông tin chi tiết về từng loại bệnh
+### Interface:
+- Professional design with blue theme
+- Interactive charts (Plotly)
+- Confidence gauge chart
+- Top 5 predictions with probabilities
+- Detailed information for each disease type
 
 ---
 
-## Kiến trúc Model
+## Model Architecture
 
 ### HybridViT Architecture
 
-Model sử dụng kiến trúc **Hybrid CNN + Vision Transformer**:
+The model uses **Hybrid CNN + Vision Transformer** architecture:
 
 ```
-Input (24x24x3)
+Input (224x224x3)
     ↓
 CNN Extractor (3 Conv Blocks)
     ↓
@@ -60,13 +58,13 @@ CBAM Attention Module
 Classifier (9 classes)
 ```
 
-**Thành phần chính:**
-- **CNN Extractor**: 3 khối convolution để trích xuất đặc trưng cục bộ
-- **ViT Base**: Vision Transformer pretrained để học đặc trưng toàn cục
-- **CBAM**: Convolutional Block Attention Module để tăng cường vùng quan trọng
-- **Classifier**: Fully connected layers với Dropout cho phân loại
+**Key Components:**
+- **CNN Extractor**: 3 convolution blocks for local feature extraction
+- **ViT Base**: Pretrained Vision Transformer for global feature learning
+- **CBAM**: Convolutional Block Attention Module to enhance important regions
+- **Classifier**: Fully connected layers with Dropout for classification
 
-**Thông số:**
+**Specifications:**
 - Input size: 224×224 pixels
 - Parameters: ~86M
 - Training dataset: ISIC 2018
@@ -86,69 +84,69 @@ Classifier (9 classes)
 
 ---
 
-## Yêu cầu hệ thống
+## System Requirements
 
-- CPU: Intel Core i5+ (GPU khuyến nghị)
+- CPU: Intel Core i5+ (GPU recommended)
 - RAM: 8GB+
 - Disk: 5GB
 - Python: 3.8 - 3.11
 
 ---
 
-## Cài đặt
+## Installation
 
 ```bash
 # Clone repository
 git clone https://github.com/InfinityZero3000/Skincancer_VIT_Ver1.0_121125.git
 cd Skincancer_VIT_Ver1.0_121125
 
-# Tạo virtual environment
+# Create virtual environment
 python -m venv .venv
 source .venv/bin/activate  # macOS/Linux
 # .venv\Scripts\activate  # Windows
 
-# Cài đặt dependencies
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-**Lưu ý:** Model `best_model.pt` sẽ tự động tải từ Google Drive khi chạy lần đầu.
+**Note:** Model `best_model.pt` will be automatically downloaded from Google Drive on first run.
 
 ---
 
-## Sử dụng
+## Usage
 
-### Chạy ứng dụng web
+### Run the web application
 
 ```bash
-# Cách 1: Sử dụng virtual environment
+# Method 1: Using virtual environment
 source .venv/bin/activate
 streamlit run app_professional.py --server.port=8502
 
-# Cách 2: Chạy trực tiếp với Python từ venv
+# Method 2: Run directly with Python from venv
 .venv/bin/python -m streamlit run app_professional.py --server.port=8502
 ```
 
-### Truy cập ứng dụng
+### Access the application
 
-Mở trình duyệt và truy cập:
+Open browser and visit:
 - **Local**: http://localhost:8502
 - **Network**: http://192.168.x.x:8502
 
-### Hướng dẫn sử dụng
+### User Guide
 
-1. **Chuẩn bị ảnh**: Chụp/chọn ảnh vùng da rõ nét, ánh sáng tốt
-2. **Upload ảnh**: Nhấn "Browse files" và chọn ảnh (JPG/PNG)
-3. **Xem kết quả**: Hệ thống phân tích và hiển thị:
-   - Loại tổn thương dự đoán
-   - Độ tin cậy (%)
-   - Top 5 dự đoán
-   - Thông tin chi tiết về bệnh
-   - Khuyến nghị điều trị
-4. **Tham khảo bác sĩ**: Luôn tham khảo ý kiến chuyên gia y tế
+1. **Prepare image**: Capture/select clear image with good lighting
+2. **Upload image**: Click "Browse files" and select image (JPG/PNG)
+3. **View results**: System analyzes and displays:
+   - Predicted lesion type
+   - Confidence level (%)
+   - Top 5 predictions
+   - Detailed disease information
+   - Treatment recommendations
+4. **Consult doctor**: Always consult a medical professional
 
 ---
 
-## Kết quả
+## Results
 
 ### Model Performance
 
@@ -159,16 +157,15 @@ Mở trình duyệt và truy cập:
 | Recall | 82-87% |
 | F1-Score | 82-87% |
 
-### Confusion Matrix
+### Best Performance
 
-Model hoạt động tốt nhất trên các lớp:
 - Melanoma: 92% accuracy
 - Basal Cell Carcinoma: 88% accuracy
 - Nevus: 87% accuracy
 
 ---
 
-## Công nghệ
+## Technologies
 
 - PyTorch (Deep Learning)
 - Streamlit (Web Framework)
@@ -178,48 +175,47 @@ Model hoạt động tốt nhất trên các lớp:
 
 ---
 
-## Lưu ý y tế
+## Medical Disclaimer
 
-**QUAN TRỌNG:**
+**IMPORTANT:**
 
-Ứng dụng CHỈ MANG TÍNH THAM KHẢO, không thay thế chẩn đoán y khoa. Kết quả AI là công cụ hỗ trợ, không phải chẩn đoán cuối cùng.
+This application is FOR REFERENCE ONLY and does not replace medical diagnosis. AI results are support tools, not final diagnoses.
 
-**Luôn tham khảo bác sĩ da liễu có chứng chỉ hành nghề.**
+**Always consult a certified dermatologist.**
 
-**Đi khám ngay khi:**
-- Nốt ruồi thay đổi hình dạng, màu sắc, kích thước
-- Vết loét không lành > 2-3 tuần
-- Vùng da chảy máu, ngứa, đau bất thường
+**Seek immediate medical attention if:**
+- Moles change in shape, color, or size
+- Sores don't heal after 2-3 weeks
+- Unusual bleeding, itching, or pain in skin areas
 
 ---
 
-## Tác giả
+## Authors
 
-- Nguyễn Thị Hồng Quyên (Model Development)
-- Nguyễn Hữu Thắng (Web Application)
+- Nguyen Thi Hong Quyen (Model Development)
+- Nguyen Huu Thang (Web Application)
 
 ---
 
 ## License
 
-Dự án này được phát triển cho mục đích nghiên cứu và học tập.
+This project is developed for research and educational purposes.
 
 ---
 
 ## Acknowledgments
 
-- ISIC 2018: Dataset chất lượng cao
+- ISIC 2018: High-quality dataset
 - Google Research: Vision Transformer architecture
 - timm library: Pretrained models
 - Streamlit: Web framework
 
 ---
 
-## Hỗ trợ
+## Support
 
-Nếu gặp vấn đề hoặc có câu hỏi:
-1. Mở issue trên GitHub
-2. Kiểm tra phần [Issues](https://github.com/InfinityZero3000/Skincancer_VIT_Ver1.0_121125/issues)
-3. Đảm bảo đã cài đặt đúng dependencies trong `requirements.txt`
+Issues or questions? Open an issue on [GitHub Issues](https://github.com/InfinityZero3000/Skincancer_VIT_Ver1.0_121125/issues)
 
-Sức khỏe của bạn là ưu tiên hàng đầu. Luôn tham khảo ý kiến bác sĩ!
+---
+
+Your health is the top priority. Always consult a doctor!

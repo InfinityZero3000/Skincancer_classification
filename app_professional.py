@@ -24,6 +24,72 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ========================== LANGUAGE SETTINGS ==========================
+# Initialize language in session state
+if 'language' not in st.session_state:
+    st.session_state.language = 'vi'  # Default to Vietnamese
+
+# Language dictionary
+TRANSLATIONS = {
+    'vi': {
+        'title': 'HỆ THỐNG PHÁT HIỆN UNG THƯ DA BẰNG AI',
+        'subtitle': 'Phân loại tổn thương da với HybridViT (CNN + Vision Transformer)',
+        'upload_title': 'TẢI ẢNH LÊN',
+        'upload_help': 'Tải ảnh da cần phân tích (JPG, PNG)',
+        'analyzing': 'Đang phân tích ảnh...',
+        'prediction_result': 'KẾT QUẢ DỰ ĐOÁN',
+        'confidence': 'Độ tin cậy',
+        'top5_predictions': 'TOP 5 DỰ ĐOÁN',
+        'disease_info': 'THÔNG TIN VỀ',
+        'consult_doctor': 'QUAN TRỌNG: Kết quả chỉ mang tính tham khảo. Luôn tham khảo bác sĩ da liễu!',
+        'system_info': 'THÔNG TIN HỆ THỐNG',
+        'model_version': 'Phiên bản',
+        'architecture': 'Kiến trúc',
+        'dataset': 'Dataset',
+        'accuracy': 'Độ chính xác',
+        'classes': 'Số lớp',
+        'how_to_use': 'HƯỚNG DẪN SỬ DỤNG',
+        'step1': 'Tải ảnh da lên hệ thống',
+        'step2': 'AI tự động phân tích và nhận diện',
+        'step3': 'Xem kết quả, biểu đồ và thông tin chi tiết',
+        'step4': 'Tham khảo bác sĩ để chẩn đoán chuyên sâu',
+        'model_info': 'THÔNG TIN MODEL',
+        'warning': 'LƯU Ý Y TẾ',
+        'warning_text': 'Ứng dụng này CHỈ hỗ trợ tham khảo, KHÔNG thay thế chẩn đoán y khoa chuyên nghiệp. Luôn tham khảo bác sĩ da liễu có chứng chỉ!'
+    },
+    'en': {
+        'title': 'AI-POWERED SKIN CANCER DETECTION SYSTEM',
+        'subtitle': 'Skin Lesion Classification with HybridViT (CNN + Vision Transformer)',
+        'upload_title': 'UPLOAD IMAGE',
+        'upload_help': 'Upload skin image for analysis (JPG, PNG)',
+        'analyzing': 'Analyzing image...',
+        'prediction_result': 'PREDICTION RESULT',
+        'confidence': 'Confidence',
+        'top5_predictions': 'TOP 5 PREDICTIONS',
+        'disease_info': 'INFORMATION ABOUT',
+        'consult_doctor': 'IMPORTANT: Results are for reference only. Always consult a dermatologist!',
+        'system_info': 'SYSTEM INFORMATION',
+        'model_version': 'Version',
+        'architecture': 'Architecture',
+        'dataset': 'Dataset',
+        'accuracy': 'Accuracy',
+        'classes': 'Classes',
+        'how_to_use': 'HOW TO USE',
+        'step1': 'Upload skin image to system',
+        'step2': 'AI automatically analyzes and identifies',
+        'step3': 'View results, charts and detailed information',
+        'step4': 'Consult doctor for professional diagnosis',
+        'model_info': 'MODEL INFORMATION',
+        'warning': 'MEDICAL DISCLAIMER',
+        'warning_text': 'This application is for REFERENCE ONLY and does NOT replace professional medical diagnosis. Always consult a certified dermatologist!'
+    }
+}
+
+def t(key: str) -> str:
+    """Get translated text based on current language"""
+    lang = st.session_state.get('language', 'vi')
+    return TRANSLATIONS.get(lang, TRANSLATIONS['vi']).get(key, key)
+
 # ========================== MODEL ARCHITECTURE ==========================
 class CNNExtractor(nn.Module):
     def __init__(self):
@@ -579,8 +645,24 @@ def load_custom_css():
 def main():
     load_custom_css()
     
-    # Header - compact
-    st.markdown("""
+    # Language selector in sidebar
+    with st.sidebar:
+        st.markdown("---")
+        lang_col1, lang_col2 = st.columns(2)
+        with lang_col1:
+            if st.button("🇻🇳 Tiếng Việt", use_container_width=True, 
+                        type="primary" if st.session_state.language == 'vi' else "secondary"):
+                st.session_state.language = 'vi'
+                st.rerun()
+        with lang_col2:
+            if st.button("🇬🇧 English", use_container_width=True,
+                        type="primary" if st.session_state.language == 'en' else "secondary"):
+                st.session_state.language = 'en'
+                st.rerun()
+        st.markdown("---")
+    
+    # Header - compact with translation
+    st.markdown(f"""
         <div style='text-align: center; margin-bottom: 1rem;'>
             <h1 style='
                 background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
@@ -590,9 +672,9 @@ def main():
                 font-weight: 900;
                 margin-bottom: 0.3rem;
                 letter-spacing: -1px;
-            '>⚕ Hệ thống Phân tích Ung thư Da AI</h1>
+            '>⚕ {t('title')}</h1>
             <p style='color: #1565C0; font-size: 0.95rem; font-weight: 500;'>
-                Hybrid CNN-Vision Transformer Model
+                {t('subtitle')}
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -715,11 +797,11 @@ def main():
         st.info("Vui lòng đảm bảo file 'best_model.pt' có trong thư mục gốc.")
         return
     
-    # File uploader - compact version
+    # File uploader - compact version with translation
     uploaded_file = st.file_uploader(
-        "Chọn ảnh da cần phân tích (JPG, PNG, JPEG)",
+        t('upload_title') + " (JPG, PNG, JPEG)",
         type=['jpg', 'jpeg', 'png'],
-        help="Tải ảnh rõ nét của vùng da cần kiểm tra"
+        help=t('upload_help')
     )
     
     # Flowchart when no image uploaded
