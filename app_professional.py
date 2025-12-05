@@ -63,6 +63,8 @@ TRANSLATIONS = {
         'flow_step3': 'AI phân tích',
         'flow_step4': 'Nhận kết quả',
         'flow_step5': 'Tham khảo bác sĩ',
+        # Disease types
+        'diseases_title': '⚕ Hệ thống có thể phát hiện 9 loại tổn thương da',
         # Sidebar
         'system_ai': 'HỆ THỐNG AI',
         'device': 'Thiết bị:',
@@ -110,6 +112,8 @@ TRANSLATIONS = {
         'flow_step3': 'AI Analysis',
         'flow_step4': 'Get Results',
         'flow_step5': 'Consult Doctor',
+        # Disease types
+        'diseases_title': '⚕ System can detect 9 types of skin lesions',
         # Sidebar
         'system_ai': 'AI SYSTEM',
         'device': 'Device:',
@@ -689,7 +693,6 @@ def main():
     
     # Language selector in sidebar
     with st.sidebar:
-        st.markdown("---")
         lang_col1, lang_col2 = st.columns(2)
         with lang_col1:
             if st.button("Tiếng Việt", use_container_width=True, 
@@ -701,7 +704,7 @@ def main():
                         type="primary" if st.session_state.language == 'en' else "secondary"):
                 st.session_state.language = 'en'
                 st.rerun()
-        st.markdown("---")
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     
     # Header - compact with translation
     st.markdown(f"""
@@ -938,7 +941,7 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
         
-        st.markdown("""
+        st.markdown(f"""
             <div style='
                 background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,152,0,0.05) 100%);
                 padding: 25px;
@@ -947,7 +950,7 @@ def main():
                 margin: 20px 0;
             '>
                 <h3 style='color: #E65100; margin: 0 0 18px 0; text-align: center; font-weight: 800; font-size: 1.3rem;'>
-                    ⚕ Hệ thống có thể phát hiện 9 loại tổn thương da
+                    {t('diseases_title')}
                 </h3>
                 <div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px;'>
                     <div style='background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid #E3F2FD;'>
