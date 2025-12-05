@@ -197,18 +197,77 @@ transform = transforms.Compose([
 ])
 
 
+# ========================== DOWNLOAD MODEL ==========================
+def download_model_from_drive():
+    """Download model from Google Drive with progress bar"""
+    import gdown
+    import requests
+    from tqdm import tqdm
+    
+    # Google Drive file ID từ link
+    file_id = "1QGJOCE4DIaqbj5DfMmfXoYL8D20xJ8XI"
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    
+    st.info("⬇ Đang tải model từ Google Drive lần đầu tiên... (330MB)")
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    try:
+        # Sử dụng gdown để download (đơn giản nhất)
+        status_text.text("Bắt đầu tải xuống...")
+        
+        # Download với gdown
+        output = gdown.download(id=file_id, output=CHECKPOINT_PATH, quiet=False)
+        
+        if output and os.path.exists(CHECKPOINT_PATH):
+            progress_bar.progress(100)
+            status_text.text(f"✓ Tải thành công! Kích thước: {os.path.getsize(CHECKPOINT_PATH) / (1024**2):.1f}MB")
+            return True
+        else:
+            st.error("Không thể tải model. Vui lòng thử lại.")
+            return False
+        
+    except Exception as e:
+        st.error(f"❌ Lỗi tải model: {str(e)}")
+        st.info("Đảm bảo link Google Drive đã được chia sẻ công khai!")
+        return False
+
+
 # ========================== LOAD MODEL ==========================
 @st.cache_resource
 def load_model():
-    """Load model with caching"""
-    model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
+    """Load model with caching and auto-download"""
     
+    # Ưu tiên load model từ file có sẵn trong project
     if os.path.exists(CHECKPOINT_PATH):
-        model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
-        model.eval()
-        return model, True
+        try:
+            with st.spinner("Đang load model vào bộ nhớ..."):
+                model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
+                model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
+                model.eval()
+                st.success("✓ Model đã sẵn sàng!")
+                return model, True
+        except Exception as e:
+            st.error(f"Lỗi khi load model từ file: {str(e)}")
+            return None, False
+    
+    # Nếu không có file, tải từ Google Drive
     else:
-        return None, False
+        st.warning("⚠ Model chưa có trong project. Đang tải từ Google Drive...")
+        if download_model_from_drive():
+            # Thử load lại sau khi download
+            try:
+                with st.spinner("Đang load model vào bộ nhớ..."):
+                    model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
+                    model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
+                    model.eval()
+                    st.success("✓ Model đã sẵn sàng!")
+                    return model, True
+            except Exception as e:
+                st.error(f"Lỗi khi load model: {str(e)}")
+                return None, False
+        else:
+            return None, False
 
 
 model, model_loaded = load_model()
