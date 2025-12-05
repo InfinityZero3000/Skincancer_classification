@@ -650,12 +650,12 @@ def main():
         st.markdown("---")
         lang_col1, lang_col2 = st.columns(2)
         with lang_col1:
-            if st.button("🇻🇳 Tiếng Việt", use_container_width=True, 
+            if st.button("Tiếng Việt", use_container_width=True, 
                         type="primary" if st.session_state.language == 'vi' else "secondary"):
                 st.session_state.language = 'vi'
                 st.rerun()
         with lang_col2:
-            if st.button("🇬🇧 English", use_container_width=True,
+            if st.button("English", use_container_width=True,
                         type="primary" if st.session_state.language == 'en' else "secondary"):
                 st.session_state.language = 'en'
                 st.rerun()
