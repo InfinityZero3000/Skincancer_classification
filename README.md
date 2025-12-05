@@ -1,59 +1,55 @@
-# Skin Cancer AI Detection System 🔬
+# Skin Cancer AI Detection System
 
 ## Hệ thống Phát hiện Ung thư Da bằng AI
 
-Ứng dụng web chuyên nghiệp sử dụng Deep Learning để phân loại 9 loại tổn thương da khác nhau với độ chính xác cao, dựa trên kiến trúc **HybridViT** (CNN + Vision Transformer).
+Ứng dụng web chuyên nghiệp sử dụng Deep Learning để phân loại 9 loại tổn thương da với độ chính xác cao, dựa trên kiến trúc **HybridViT** (CNN + Vision Transformer).
 
 ---
 
-## 📋 Mục lục
+## Workflow
 
-- [Tính năng](#-tính-năng)
-- [Kiến trúc Model](#-kiến-trúc-model)
-- [Dataset](#-dataset)
-- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
-- [Cài đặt](#-cài-đặt)
-- [Sử dụng](#-sử-dụng)
-- [Kết quả](#-kết-quả)
-- [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
-- [Công nghệ](#-công-nghệ)
-- [Lưu ý y tế](#-lưu-ý-y-tế)
-- [Tác giả](#-tác-giả)
+```mermaid
+graph LR
+    A[Upload Image] --> B[Preprocess]
+    B --> C[CNN Feature Extraction]
+    C --> D[Vision Transformer]
+    D --> E[CBAM Attention]
+    E --> F[Classification]
+    F --> G[Display Results]
+```
 
 ---
 
-## ✨ Tính năng
+## Tính năng
 
 ### Phân loại 9 loại tổn thương da:
-1. **Actinic Keratosis** (Sừng hóa quang hóa)
-2. **Basal Cell Carcinoma** (Ung thư tế bào đáy)
-3. **Dermatofibroma** (U xơ da)
-4. **Melanoma** (U hắc tố ác tính)
-5. **Nevus** (Nốt ruồi)
-6. **Pigmented Benign Keratosis** (Sừng hóa lành tính có sắc tố)
-7. **Seborrheic Keratosis** (Sừng hóa tiết bã)
-8. **Squamous Cell Carcinoma** (Ung thư tế bào vảy)
-9. **Vascular Lesion** (Tổn thương mạch máu)
+1. Actinic Keratosis (Sừng hóa quang hóa)
+2. Basal Cell Carcinoma (Ung thư tế bào đáy)
+3. Dermatofibroma (U xơ da)
+4. Melanoma (U hắc tố ác tính)
+5. Nevus (Nốt ruồi)
+6. Pigmented Benign Keratosis (Sừng hóa lành tính có sắc tố)
+7. Seborrheic Keratosis (Sừng hóa tiết bã)
+8. Squamous Cell Carcinoma (Ung thư tế bào vảy)
+9. Vascular Lesion (Tổn thương mạch máu)
 
-### Giao diện chuyên nghiệp:
-- ✅ Thiết kế hiện đại với màu xanh dương chủ đạo
-- ✅ Hiển thị kết quả trực quan với biểu đồ tương tác (Plotly)
-- ✅ Sidebar thông tin chi tiết về hệ thống
-- ✅ Độ tin cậy được thể hiện bằng gauge chart
-- ✅ Top 5 dự đoán với xác suất
-- ✅ Thông tin chi tiết về từng loại tổn thương
-- ✅ Hướng dẫn sử dụng tích hợp
+### Giao diện:
+- Thiết kế chuyên nghiệp với màu xanh dương
+- Biểu đồ tương tác (Plotly)
+- Gauge chart hiển thị độ tin cậy
+- Top 5 dự đoán với xác suất
+- Thông tin chi tiết về từng loại bệnh
 
 ---
 
-## 🏗️ Kiến trúc Model
+## Kiến trúc Model
 
 ### HybridViT Architecture
 
 Model sử dụng kiến trúc **Hybrid CNN + Vision Transformer**:
 
 ```
-Input (224x224x3)
+Input (24x24x3)
     ↓
 CNN Extractor (3 Conv Blocks)
     ↓
@@ -78,66 +74,48 @@ Classifier (9 classes)
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-**ISIC 2018 Dataset** (International Skin Imaging Collaboration)
+**ISIC 2018** (International Skin Imaging Collaboration)
 
-- **Training**: ~10,000 ảnh
-- **Testing**: ~2,000 ảnh
-- **Classes**: 9 loại tổn thương da
-- **Format**: JPG, PNG
-- **Resolution**: Variable, resized to 224×224
-
----
-
-## 💻 Yêu cầu hệ thống
-
-### Phần cứng:
-- CPU: Intel Core i5 hoặc tương đương (GPU khuyến nghị cho training)
-- RAM: 8GB trở lên
-- Disk: 5GB trống (bao gồm dataset)
-
-### Phần mềm:
-- Python 3.8 - 3.11
-- pip hoặc conda
+- Training: ~10,000 images
+- Testing: ~2,000 images
+- Classes: 9 types
+- Format: JPG, PNG
+- Resolution: 224×224
 
 ---
 
-## 🚀 Cài đặt
+## Yêu cầu hệ thống
 
-### 1. Clone repository
+- CPU: Intel Core i5+ (GPU khuyến nghị)
+- RAM: 8GB+
+- Disk: 5GB
+- Python: 3.8 - 3.11
+
+---
+
+## Cài đặt
 
 ```bash
+# Clone repository
 git clone https://github.com/InfinityZero3000/Skincancer_VIT_Ver1.0_121125.git
 cd Skincancer_VIT_Ver1.0_121125
-```
 
-### 2. Tạo virtual environment
-
-```bash
-# Sử dụng venv
+# Tạo virtual environment
 python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate  # Windows
 
-# Kích hoạt environment
-# macOS/Linux:
-source .venv/bin/activate
-# Windows:
-.venv\Scripts\activate
-```
-
-### 3. Cài đặt dependencies
-
-```bash
+# Cài đặt dependencies
 pip install -r requirements.txt
 ```
 
-### 4. Tải model pretrained
-
-Model file `best_model.pt` đã có sẵn trong repository. Nếu không có, download từ link được cung cấp và đặt vào thư mục gốc.
+**Lưu ý:** Model `best_model.pt` sẽ tự động tải từ Google Drive khi chạy lần đầu.
 
 ---
 
-## 🎯 Sử dụng
+## Sử dụng
 
 ### Chạy ứng dụng web
 
@@ -170,7 +148,7 @@ Mở trình duyệt và truy cập:
 
 ---
 
-## 📈 Kết quả
+## Kết quả
 
 ### Model Performance
 
@@ -190,109 +168,54 @@ Model hoạt động tốt nhất trên các lớp:
 
 ---
 
-## 📁 Cấu trúc thư mục
+## Công nghệ
 
-```
-Skincancer_VIT_Ver1.0_121125/
-│
-├── app_professional.py          # Ứng dụng web chính (Version 3.0)
-├── best_model.pt                # Model đã train
-├── requirements.txt             # Dependencies
-├── README.md                    # Tài liệu này
-├── .gitignore                   # Git ignore rules
-│
-├── data/                        # Dataset ISIC 2018
-│   ├── Train/                   # Dữ liệu training
-│   │   ├── actinic keratosis/
-│   │   ├── basal cell carcinoma/
-│   │   ├── dermatofibroma/
-│   │   ├── melanoma/
-│   │   ├── nevus/
-│   │   ├── pigmented benign keratosis/
-│   │   ├── seborrheic keratosis/
-│   │   ├── squamous cell carcinoma/
-│   │   └── vascular lesion/
-│   │
-│   └── Test/                    # Dữ liệu testing
-│       └── (9 thư mục tương tự)
-│
-├── Script/                      # Jupyter notebooks
-│   ├── CNN_ViT_CBAM_Ver1_2.ipynb
-│   └── CNN_CBAM_ViTBase_ver1_2.ipynb
-│
-├── checkpoints/                 # Training checkpoints
-├── patient_database/            # Database bệnh nhân (optional)
-└── .venv/                       # Virtual environment
-```
+- PyTorch (Deep Learning)
+- Streamlit (Web Framework)
+- Vision Transformer (ViT-Base)
+- CBAM Attention
+- Plotly (Visualization)
 
 ---
 
-## 🛠️ Công nghệ
-
-### Framework & Libraries
-
-| Công nghệ | Mục đích |
-|-----------|----------|
-| **PyTorch** | Deep learning framework |
-| **Streamlit** | Web application framework |
-| **timm** | Pretrained vision models |
-| **Plotly** | Interactive visualizations |
-| **Pillow** | Image processing |
-| **NumPy** | Numerical computing |
-| **Pandas** | Data manipulation |
-
-### Model Components
-
-- **Vision Transformer (ViT)**: Google's ViT-Base architecture
-- **CNN Backbone**: Custom 3-layer convolution network
-- **CBAM**: Channel + Spatial attention mechanism
-- **Optimizer**: AdamW with learning rate scheduling
-- **Loss Function**: Cross Entropy Loss
-- **Augmentation**: Random rotation, flip, color jitter
-
----
-
-## ⚠️ Lưu ý y tế
+## Lưu ý y tế
 
 **QUAN TRỌNG:**
 
-- ⚠️ Ứng dụng này **CHỈ MANG TÍNH THAM KHẢO**, không thay thế chẩn đoán y khoa
-- ⚠️ Kết quả AI là **CÔNG CỤ HỖ TRỢ**, không phải chẩn đoán cuối cùng
-- ⚠️ **LUÔN THAM KHẢO** bác sĩ da liễu có chứng chỉ hành nghề
-- ⚠️ Khám sức khỏe định kỳ và theo dõi sự thay đổi của da
-- ⚠️ Không tự ý điều trị dựa trên kết quả AI
+Ứng dụng CHỈ MANG TÍNH THAM KHẢO, không thay thế chẩn đoán y khoa. Kết quả AI là công cụ hỗ trợ, không phải chẩn đoán cuối cùng.
 
-**Khi nào cần đi khám ngay:**
+**Luôn tham khảo bác sĩ da liễu có chứng chỉ hành nghề.**
+
+**Đi khám ngay khi:**
 - Nốt ruồi thay đổi hình dạng, màu sắc, kích thước
-- Vết loét không lành trong 2-3 tuần
-- Vùng da chảy máu, ngứa, đau không rõ nguyên nhân
-- Xuất hiện tổn thương mới không bình thường
+- Vết loét không lành > 2-3 tuần
+- Vùng da chảy máu, ngứa, đau bất thường
 
 ---
 
-## 👨‍💻 Tác giả
-**Nguyễn Thị Hồng Quyên - Model**
-**Nguyễn Hữu Thắng - Web**
-- Project: Skincancer_VIT_Ver1.0_121125
+## Tác giả
+
+- Nguyễn Thị Hồng Quyên (Model Development)
+- Nguyễn Hữu Thắng (Web Application)
 
 ---
 
-## 📝 License
+## License
 
 Dự án này được phát triển cho mục đích nghiên cứu và học tập.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- **ISIC 2018**: Cung cấp dataset chất lượng cao
-- **Google Research**: Vision Transformer architecture
-- **timm library**: Pretrained models
-- **Streamlit**: Web framework đơn giản và mạnh mẽ
+- ISIC 2018: Dataset chất lượng cao
+- Google Research: Vision Transformer architecture
+- timm library: Pretrained models
+- Streamlit: Web framework
 
 ---
 
-## 📞 Liên hệ & Hỗ trợ
+## Hỗ trợ
 
 Nếu gặp vấn đề hoặc có câu hỏi:
 1. Mở issue trên GitHub
@@ -301,15 +224,15 @@ Nếu gặp vấn đề hoặc có câu hỏi:
 
 ---
 
-## 🔄 Version History
+## Version History
 
 ### Version 3.0 (Current)
-- ✅ Giao diện chuyên nghiệp với màu xanh dương
-- ✅ Loại bỏ hoàn toàn emoji, sử dụng Unicode symbols
-- ✅ Tối ưu layout, giảm scrolling
-- ✅ Thêm hướng dẫn sử dụng tích hợp
-- ✅ Sidebar thông tin đầy đủ
-- ✅ Charts tương tác với Plotly
+- Giao diện chuyên nghiệp với màu xanh dương
+- Toast notifications tự động ẩn
+- Tối ưu layout, giảm scrolling
+- Hướng dẫn sử dụng flowchart
+- Auto-download model từ Google Drive
+- Charts tương tác với Plotly
 
 ### Version 2.0
 - Giao diện hiện đại cơ bản
@@ -321,4 +244,4 @@ Nếu gặp vấn đề hoặc có câu hỏi:
 
 ---
 
-**⚕ Sức khỏe của bạn là ưu tiên hàng đầu. Luôn tham khảo ý kiến bác sĩ!**
+Sức khỏe của bạn là ưu tiên hàng đầu. Luôn tham khảo ý kiến bác sĩ!
