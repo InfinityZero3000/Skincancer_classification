@@ -724,7 +724,10 @@ def main():
     # Sidebar
     with st.sidebar:
         # System Status Card
-        st.markdown("""
+        status_bg = '#4CAF50' if model_loaded else '#F44336'
+        status_text = ('✓ ' + t('ready')) if model_loaded else '✗ Error'
+        
+        st.markdown(f"""
             <div style='
                 background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
                 padding: 25px;
@@ -739,7 +742,7 @@ def main():
                 <div style='background: rgba(255,255,255,0.15); padding: 15px; border-radius: 12px; margin-top: 15px;'>
                     <div style='display: flex; justify-content: space-between; margin-bottom: 12px;'>
                         <span style='font-weight: 600;'>▣ {t('device')}</span>
-                        <span style='background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 6px; font-weight: 700;'>{device}</span>
+                        <span style='background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 6px; font-weight: 700;'>{DEVICE.upper()}</span>
                     </div>
                     <div style='display: flex; justify-content: space-between;'>
                         <span style='font-weight: 600;'>▣ {t('status')}</span>
@@ -747,11 +750,7 @@ def main():
                     </div>
                 </div>
             </div>
-        """.format(
-            device=DEVICE.upper(),
-            status_bg='#4CAF50' if model_loaded else '#F44336',
-            status_text=('✓ ' + t('ready')) if model_loaded else '✗ Error'
-        ), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
         
         # Quick Guide with icons
         st.markdown(f"""
