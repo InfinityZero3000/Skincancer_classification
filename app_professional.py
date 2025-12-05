@@ -651,7 +651,7 @@ def main():
         help="Tải ảnh rõ nét của vùng da cần kiểm tra"
     )
     
-    # Information when no image uploaded
+    # Flowchart when no image uploaded
     if uploaded_file is None:
         st.markdown("""
             <div style='
@@ -660,27 +660,211 @@ def main():
                 border-radius: 18px;
                 border: 3px solid rgba(25,118,210,0.3);
                 margin: 30px 0;
-                text-align: center;
             '>
-                <h2 style='color: #1565C0; margin: 0 0 25px 0; font-weight: 900; font-size: 1.8rem;'>
-                    Hướng dẫn sử dụng
+                <h2 style='color: #1565C0; margin: 0 0 35px 0; font-weight: 900; font-size: 1.9rem; text-align: center;'>
+                    Quy trình phân tích AI
                 </h2>
-                <div style='color: #0D47A1; font-size: 1.05rem; line-height: 1.9; text-align: left; max-width: 800px; margin: 0 auto;'>
-                    <div style='background: white; padding: 20px; border-radius: 12px; margin: 15px 0; border-left: 5px solid #1976D2;'>
-                        <p style='font-weight: 700; margin: 0 0 10px 0; color: #1976D2;'>① Chuẩn bị ảnh</p>
-                        <p style='margin: 0; font-weight: 500;'>Chụp ảnh vùng da cần kiểm tra với độ phân giải cao, ánh sáng tốt và tập trung vào vùng tổn thương.</p>
+                
+                <!-- Flowchart -->
+                <div style='max-width: 900px; margin: 0 auto;'>
+                    <!-- Step 1 -->
+                    <div style='display: flex; align-items: center; margin: 25px 0;'>
+                        <div style='
+                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+                            color: white;
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2rem;
+                            font-weight: 900;
+                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
+                            flex-shrink: 0;
+                        '>①</div>
+                        <div style='
+                            flex: 1;
+                            background: white;
+                            padding: 20px 25px;
+                            margin-left: 20px;
+                            border-radius: 12px;
+                            border-left: 5px solid #1976D2;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        '>
+                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Chuẩn bị ảnh</h3>
+                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
+                                Chụp ảnh vùng da cần kiểm tra với độ phân giải cao, ánh sáng đầy đủ, tập trung vào vùng tổn thương
+                            </p>
+                        </div>
                     </div>
-                    <div style='background: white; padding: 20px; border-radius: 12px; margin: 15px 0; border-left: 5px solid #1976D2;'>
-                        <p style='font-weight: 700; margin: 0 0 10px 0; color: #1976D2;'>② Tải ảnh lên</p>
-                        <p style='margin: 0; font-weight: 500;'>Nhấn vào nút "Browse files" ở trên để chọn ảnh từ thiết bị của bạn (hỗ trợ JPG, PNG, JPEG).</p>
+                    
+                    <!-- Arrow Down -->
+                    <div style='text-align: center; margin: 15px 0;'>
+                        <div style='
+                            display: inline-block;
+                            color: #1976D2;
+                            font-size: 2.5rem;
+                            line-height: 1;
+                        '>▼</div>
                     </div>
-                    <div style='background: white; padding: 20px; border-radius: 12px; margin: 15px 0; border-left: 5px solid #1976D2;'>
-                        <p style='font-weight: 700; margin: 0 0 10px 0; color: #1976D2;'>③ Nhận kết quả</p>
-                        <p style='margin: 0; font-weight: 500;'>Hệ thống AI sẽ phân tích và đưa ra kết quả chẩn đoán trong vài giây, bao gồm loại tổn thương, độ tin cậy và thông tin chi tiết.</p>
+                    
+                    <!-- Step 2 -->
+                    <div style='display: flex; align-items: center; margin: 25px 0;'>
+                        <div style='
+                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+                            color: white;
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2rem;
+                            font-weight: 900;
+                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
+                            flex-shrink: 0;
+                        '>②</div>
+                        <div style='
+                            flex: 1;
+                            background: white;
+                            padding: 20px 25px;
+                            margin-left: 20px;
+                            border-radius: 12px;
+                            border-left: 5px solid #1976D2;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        '>
+                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Tải ảnh lên hệ thống</h3>
+                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
+                                Nhấn "Browse files" ở trên để chọn ảnh từ thiết bị (JPG, PNG, JPEG)
+                            </p>
+                        </div>
                     </div>
-                    <div style='background: white; padding: 20px; border-radius: 12px; margin: 15px 0; border-left: 5px solid #1976D2;'>
-                        <p style='font-weight: 700; margin: 0 0 10px 0; color: #1976D2;'>④ Tham khảo ý kiến bác sĩ</p>
-                        <p style='margin: 0; font-weight: 500;'>Kết quả AI chỉ mang tính tham khảo. Luôn tham khảo ý kiến bác sĩ da liễu để có chẩn đoán chính xác.</p>
+                    
+                    <!-- Arrow Down -->
+                    <div style='text-align: center; margin: 15px 0;'>
+                        <div style='
+                            display: inline-block;
+                            color: #1976D2;
+                            font-size: 2.5rem;
+                            line-height: 1;
+                        '>▼</div>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div style='display: flex; align-items: center; margin: 25px 0;'>
+                        <div style='
+                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+                            color: white;
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2rem;
+                            font-weight: 900;
+                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
+                            flex-shrink: 0;
+                        '>③</div>
+                        <div style='
+                            flex: 1;
+                            background: white;
+                            padding: 20px 25px;
+                            margin-left: 20px;
+                            border-radius: 12px;
+                            border-left: 5px solid #1976D2;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        '>
+                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>AI phân tích tự động</h3>
+                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
+                                Model HybridViT xử lý ảnh qua CNN + Vision Transformer + CBAM trong vài giây
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Arrow Down -->
+                    <div style='text-align: center; margin: 15px 0;'>
+                        <div style='
+                            display: inline-block;
+                            color: #1976D2;
+                            font-size: 2.5rem;
+                            line-height: 1;
+                        '>▼</div>
+                    </div>
+                    
+                    <!-- Step 4 -->
+                    <div style='display: flex; align-items: center; margin: 25px 0;'>
+                        <div style='
+                            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+                            color: white;
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2rem;
+                            font-weight: 900;
+                            box-shadow: 0 4px 15px rgba(25,118,210,0.4);
+                            flex-shrink: 0;
+                        '>④</div>
+                        <div style='
+                            flex: 1;
+                            background: white;
+                            padding: 20px 25px;
+                            margin-left: 20px;
+                            border-radius: 12px;
+                            border-left: 5px solid #1976D2;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        '>
+                            <h3 style='color: #1565C0; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Nhận kết quả chi tiết</h3>
+                            <p style='color: #0D47A1; margin: 0; line-height: 1.6; font-weight: 500;'>
+                                Xem loại tổn thương, độ tin cậy, top 5 dự đoán, biểu đồ phân tích và thông tin y tế
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Arrow Down -->
+                    <div style='text-align: center; margin: 15px 0;'>
+                        <div style='
+                            display: inline-block;
+                            color: #FF9800;
+                            font-size: 2.5rem;
+                            line-height: 1;
+                        '>▼</div>
+                    </div>
+                    
+                    <!-- Step 5 -->
+                    <div style='display: flex; align-items: center; margin: 25px 0;'>
+                        <div style='
+                            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+                            color: white;
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2rem;
+                            font-weight: 900;
+                            box-shadow: 0 4px 15px rgba(255,152,0,0.4);
+                            flex-shrink: 0;
+                        '>⚕</div>
+                        <div style='
+                            flex: 1;
+                            background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,152,0,0.1) 100%);
+                            padding: 20px 25px;
+                            margin-left: 20px;
+                            border-radius: 12px;
+                            border-left: 5px solid #FF9800;
+                            box-shadow: 0 2px 8px rgba(255,152,0,0.2);
+                        '>
+                            <h3 style='color: #E65100; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800;'>Tham khảo bác sĩ</h3>
+                            <p style='color: #E65100; margin: 0; line-height: 1.6; font-weight: 600;'>
+                                Kết quả AI chỉ mang tính tham khảo. Luôn tham khảo bác sĩ da liễu để chẩn đoán chính xác
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
