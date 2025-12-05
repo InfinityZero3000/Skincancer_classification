@@ -1,0 +1,22 @@
+# Requirements for Web Interface
+# Install with: pip install -r requirements_ui.txt
+
+# Core dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# Web frameworks
+gradio>=4.0.0
+streamlit>=1.28.0
+
+# Visualization
+matplotlib>=3.7.0
+plotly>=5.17.0
+seaborn>=0.12.0
+
+# Data processing
+pandas>=2.0.0
+scikit-learn>=1.3.0
