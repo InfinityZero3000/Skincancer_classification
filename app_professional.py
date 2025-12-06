@@ -574,10 +574,17 @@ def load_custom_css():
         
         section[data-testid="stSidebar"] {
             background: linear-gradient(180deg, #1976D2 0%, #0D47A1 100%);
+            width: 25rem !important;
+            min-width: 25rem !important;
+            max-width: 25rem !important;
         }
         
         section[data-testid="stSidebar"] * {
             color: white !important;
+        }
+        
+        section[data-testid="stSidebar"] > div:first-child {
+            width: 25rem !important;
         }
         
         .stButton>button {
