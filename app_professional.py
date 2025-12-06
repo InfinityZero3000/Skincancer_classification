@@ -349,7 +349,7 @@ def download_model_from_drive():
 
 
 # ========================== LOAD MODEL ==========================
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def load_model():
     """Load model with caching and auto-download"""
     
@@ -357,7 +357,8 @@ def load_model():
     if os.path.exists(CHECKPOINT_PATH):
         try:
             model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
-            model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
+            checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
+            model.load_state_dict(checkpoint)
             model.eval()
             return model, True, "local"
         except Exception as e:
@@ -365,11 +366,13 @@ def load_model():
     
     # Nếu không có file, tải từ Google Drive
     else:
-        if download_model_from_drive():
+        download_success = download_model_from_drive()
+        if download_success:
             # Thử load lại sau khi download
             try:
                 model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
-                model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
+                checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
+                model.load_state_dict(checkpoint)
                 model.eval()
                 return model, True, "downloaded"
             except Exception as e:
