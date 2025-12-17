@@ -9,6 +9,7 @@ import time
 import torch
 import torch.nn as nn
 import streamlit as st
+import google.generativeai as genai
 from PIL import Image
 import numpy as np
 import pandas as pd
@@ -78,7 +79,17 @@ TRANSLATIONS = {
         'important_note': 'LƯU Ý QUAN TRỌNG',
         'note_text': 'Kết quả AI chỉ mang tính chất tham khảo. Luôn tham khảo ý kiến bác sĩ chuyên khoa để có chẩn đoán chính xác.',
         'cannot_load_model': 'Không thể tải model từ:',
-        'ensure_model': 'Vui lòng đảm bảo file \'best_model.pt\' có trong thư mục gốc.'
+        'ensure_model': 'Vui lòng đảm bảo file \'best_model.pt\' có trong thư mục gốc.',
+        # Gemini advice
+        'advice_title': 'Tư vấn chăm sóc (AI)',
+        'advice_desc': 'Gợi ý hành động an toàn dựa trên dự đoán AI. KHÔNG thay thế tư vấn y khoa và KHÔNG kê thuốc.',
+        'advice_textarea': 'Mô tả thêm triệu chứng / thời gian xuất hiện (tùy chọn)',
+        'advice_btn': 'Lấy gợi ý chăm sóc',
+        'advice_loading': 'Đang lấy gợi ý từ Gemini...',
+        'advice_result_title': 'Gợi ý hành động',
+        'advice_missing_key': 'Chưa thiết lập GEMINI_API_KEY. Vui lòng thêm vào biến môi trường hoặc st.secrets.',
+        'advice_error': 'Không thể lấy gợi ý từ Gemini. Vui lòng thử lại.',
+        'advice_disclaimer': 'Gợi ý chỉ mang tính tham khảo, không chẩn đoán hay kê đơn. Luôn gặp bác sĩ chuyên khoa.'
     },
     'en': {
         'title': 'AI-POWERED SKIN CANCER DETECTION SYSTEM',
@@ -127,7 +138,17 @@ TRANSLATIONS = {
         'important_note': 'IMPORTANT NOTE',
         'note_text': 'AI results are for reference only. Always consult a specialist for accurate diagnosis.',
         'cannot_load_model': 'Cannot load model from:',
-        'ensure_model': 'Please ensure \'best_model.pt\' file exists in the root directory.'
+        'ensure_model': 'Please ensure \'best_model.pt\' file exists in the root directory.',
+        # Gemini advice
+        'advice_title': 'Care advice (AI)',
+        'advice_desc': 'Safety-first guidance based on the AI prediction. Not medical advice and never prescriptive.',
+        'advice_textarea': 'Describe additional symptoms / duration (optional)',
+        'advice_btn': 'Get care suggestions',
+        'advice_loading': 'Fetching suggestions from Gemini...',
+        'advice_result_title': 'Suggested actions',
+        'advice_missing_key': 'GEMINI_API_KEY is not set. Please provide via environment variable or st.secrets.',
+        'advice_error': 'Unable to fetch advice from Gemini. Please try again.',
+        'advice_disclaimer': 'This is reference-only guidance, not a diagnosis or prescription. Always see a specialist.'
     }
 }
 
@@ -137,7 +158,54 @@ def t(key: str) -> str:
     return TRANSLATIONS.get(lang, TRANSLATIONS['vi']).get(key, key)
 
 # ========================== MODEL ARCHITECTURE ==========================
-class CNNExtractor(nn.Module):
+class ChannelAttention(nn.Module):
+    def __init__(self, in_channels, reduction=16):
+        super().__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        self.mlp = nn.Sequential(
+            nn.Linear(in_channels, in_channels // reduction, bias=False),
+            nn.ReLU(),
+            nn.Linear(in_channels // reduction, in_channels, bias=False)
+        )
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        avg_out = self.mlp(self.avg_pool(x).view(b, c))
+        max_out = self.mlp(self.max_pool(x).view(b, c))
+        out = avg_out + max_out
+        out = self.sigmoid(out).view(b, c, 1, 1)
+        return x * out
+
+
+class SpatialAttention(nn.Module):
+    def __init__(self, kernel_size=7):
+        super().__init__()
+        self.conv = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        x_cat = torch.cat([avg_out, max_out], dim=1)
+        out = self.sigmoid(self.conv(x_cat))
+        return x * out
+
+
+class CBAM(nn.Module):
+    def __init__(self, in_channels, reduction=16, kernel_size=7):
+        super().__init__()
+        self.channel_att = ChannelAttention(in_channels, reduction)
+        self.spatial_att = SpatialAttention(kernel_size)
+
+    def forward(self, x):
+        x = self.channel_att(x)
+        x = self.spatial_att(x)
+        return x
+
+
+class CNNExtractorCBAM(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Sequential(
@@ -158,11 +226,13 @@ class CNNExtractor(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2)
         )
+        self.cbam = CBAM(128)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
+        x = self.cbam(x)
         return x
 
 
@@ -180,9 +250,9 @@ class PatchEmbed(nn.Module):
 class HybridViT(nn.Module):
     def __init__(self, num_classes=9):
         super().__init__()
-        self.cnn = CNNExtractor()
+        self.cnn = CNNExtractorCBAM()
         self.patch_embed = PatchEmbed()
-        self.vit = timm.models.vision_transformer.vit_base_patch16_224(pretrained=False)
+        self.vit = timm.create_model('vit_base_patch16_224', pretrained=False)
         self.vit.patch_embed = None
         self.classifier = nn.Linear(self.vit.embed_dim, num_classes)
 
@@ -199,9 +269,12 @@ class HybridViT(nn.Module):
 
 
 # ========================== CONFIGURATION ==========================
-CHECKPOINT_PATH = "best_model.pt"
+# Get the absolute path to ensure model is found
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CHECKPOINT_PATH = os.path.join(BASE_DIR, "best_model_CNN_CBAM_ViT.pt")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_CLASSES = 9
+GEMINI_API_KEY = "AIzaSyDWdA0GB2r5wGo5JWEww0KPeU1XkUk-fzg"
 
 CLASS_NAMES = [
     'Actinic Keratosis',
@@ -357,8 +430,20 @@ def load_model():
     if os.path.exists(CHECKPOINT_PATH):
         try:
             model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
-            checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
-            model.load_state_dict(checkpoint)
+            # Try loading without weights_only first (for older PyTorch versions)
+            try:
+                checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
+            except TypeError:
+                # Fallback for older PyTorch versions
+                checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE)
+            
+            # Checkpoint có thể là state_dict trực tiếp hoặc dictionary có key 'model_state_dict'
+            if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+                model.load_state_dict(checkpoint['model_state_dict'])
+            else:
+                # Checkpoint là state_dict trực tiếp
+                model.load_state_dict(checkpoint)
+            
             model.eval()
             return model, True, "local"
         except Exception as e:
@@ -371,8 +456,18 @@ def load_model():
             # Thử load lại sau khi download
             try:
                 model = HybridViT(num_classes=NUM_CLASSES).to(DEVICE)
-                checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
-                model.load_state_dict(checkpoint)
+                try:
+                    checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True)
+                except TypeError:
+                    checkpoint = torch.load(CHECKPOINT_PATH, map_location=DEVICE)
+                
+                # Checkpoint có thể là state_dict trực tiếp hoặc dictionary có key 'model_state_dict'
+                if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+                    model.load_state_dict(checkpoint['model_state_dict'])
+                else:
+                    # Checkpoint là state_dict trực tiếp
+                    model.load_state_dict(checkpoint)
+                
                 model.eval()
                 return model, True, "downloaded"
             except Exception as e:
@@ -418,6 +513,70 @@ def predict(image):
     confidence = probabilities[pred_idx].item()
     
     return pred_class, pred_class_vi, confidence, probabilities.cpu().numpy()
+
+
+def generate_gemini_advice(pred_class, pred_class_vi, risk, confidence, user_notes, lang_code):
+    """Call Gemini to produce safety-first care advice (no prescriptions)."""
+    if not GEMINI_API_KEY:
+        return None, 'missing_key'
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        
+        # Try different model names that may be available (newest to oldest)
+        model_names_to_try = [
+            "gemini-2.0-flash-exp",
+            "gemini-1.5-pro",
+            "gemini-1.5-flash",
+            "gemini-pro",
+            "gemini-3.0",
+        ]
+        
+        model = None
+        last_error = None
+        for model_name in model_names_to_try:
+            try:
+                test_model = genai.GenerativeModel(model_name)
+                # Try a simple test to verify the model works
+                test_response = test_model.generate_content("test")
+                model = test_model
+                break
+            except Exception as e:
+                last_error = str(e)
+                continue
+        
+        if model is None:
+            # Fallback: try to get first available model
+            try:
+                available_models = [m for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                if available_models:
+                    model_name = available_models[0].name.replace('models/', '')
+                    model = genai.GenerativeModel(model_name)
+            except Exception as e:
+                last_error = str(e)
+        
+        if model is None:
+            error_msg = f"Không thể kết nối Gemini API. Lỗi: {last_error}"
+            return None, error_msg
+        
+        lang_label = 'Vietnamese' if lang_code == 'vi' else 'English'
+        prompt = f"""
+You are a dermatology decision-support assistant. Provide concise, safety-first guidance.
+Inputs:
+- Predicted condition: {pred_class} ({pred_class_vi})
+- Risk tier: {risk}
+- Model confidence: {confidence*100:.1f}%
+- User-described symptoms: {user_notes or 'N/A'}
+Output language: {lang_label}
+Rules:
+- Do NOT prescribe or name specific drugs or treatments.
+- Do NOT give detailed self-treatment steps; emphasize seeing a specialist for procedures/meds.
+- Structure the reply in 4 short bullet points: (1) severity & urgency, (2) immediate self-care basics (non-pharmacologic), (3) when to see a dermatologist, (4) red-flag signs that require urgent care.
+- Keep total under 120 words.
+"""
+        response = model.generate_content(prompt)
+        return response.text, None
+    except Exception as e:
+        return None, str(e)
 
 
 # ========================== VISUALIZATION FUNCTIONS ==========================
@@ -1196,6 +1355,51 @@ def main():
                     '>{info['risk'].upper()}</span>
                 </div>
             """, unsafe_allow_html=True)
+
+        # Gemini care advice (safety-first, non-prescriptive)
+        st.markdown("<div style='margin: 25px 0 10px 0;'></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style='
+                background: linear-gradient(135deg, rgba(25,118,210,0.06) 0%, rgba(13,71,161,0.03) 100%);
+                border: 2px solid rgba(25,118,210,0.15);
+                border-radius: 16px;
+                padding: 18px 20px;
+                box-shadow: 0 6px 16px rgba(25,118,210,0.12);
+            '>
+                <h3 style='color: #0D47A1; margin: 0 0 10px 0; font-weight: 850;'>{t('advice_title')}</h3>
+                <p style='color: #1565C0; margin: 0 0 12px 0; font-weight: 600;'>{t('advice_desc')}</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        user_notes = st.text_area(t('advice_textarea'), height=90)
+
+        advice_placeholder = st.empty()
+        if not GEMINI_API_KEY:
+            advice_placeholder.warning(t('advice_missing_key'))
+        else:
+            if st.button(t('advice_btn'), use_container_width=True):
+                with st.spinner(t('advice_loading')):
+                    advice_text, advice_err = generate_gemini_advice(
+                        pred_class,
+                        pred_class_vi,
+                        info['risk'],
+                        confidence,
+                        user_notes,
+                        st.session_state.get('language', 'vi')
+                    )
+                if advice_text:
+                    advice_placeholder.markdown(
+                        f"""
+                        <div style='background: white; border: 2px solid rgba(25,118,210,0.2); border-radius: 14px; padding: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); margin-top: 12px;'>
+                            <h4 style='color: #0D47A1; margin: 0 0 10px 0; font-weight: 800;'>{t('advice_result_title')}</h4>
+                            <div style='color: #0D47A1; line-height: 1.6; font-weight: 600;'>{advice_text}</div>
+                            <p style='color: #C62828; font-size: 0.9rem; margin-top: 12px; font-weight: 700;'>⚠ {t('advice_disclaimer')}</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    advice_placeholder.error(t('advice_error') + (f" ({advice_err})" if advice_err else ""))
         
         # Medical disclaimer
         st.markdown("---")
