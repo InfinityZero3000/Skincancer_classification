@@ -274,7 +274,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHECKPOINT_PATH = os.path.join(BASE_DIR, "best_model_CNN_CBAM_ViT.pt")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_CLASSES = 9
-GEMINI_API_KEY = "AIzaSyDWdA0GB2r5wGo5JWEww0KPeU1XkUk-fzg"
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY", None)
 
 CLASS_NAMES = [
     'Actinic Keratosis',

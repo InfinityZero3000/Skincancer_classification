@@ -24,3 +24,7 @@ logs/
 streamlit_logs/
 streamlit.logs
 streamlit.log
+
+# Environment variables and secrets
+.env
+.streamlit/secrets.toml
