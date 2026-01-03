@@ -423,57 +423,44 @@ def download_model_from_drive():
 
 # ========================== LOAD MODEL ==========================
 @st.cache_resource(show_spinner=False)
-def load_model(checkpoint_path, device, num_classes):
-    """Load model with caching and auto-download"""
+def _load_model_from_checkpoint(checkpoint_path, device, num_classes):
+    """Internal function to load model from checkpoint file - cached"""
+    model = HybridViT(num_classes=num_classes).to(device)
     
-    # Ưu tiên load model từ file có sẵn trong project
-    if os.path.exists(checkpoint_path):
-        try:
-            model = HybridViT(num_classes=num_classes).to(device)
-            # Try loading without weights_only first (for older PyTorch versions)
-            try:
-                checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
-            except TypeError:
-                # Fallback for older PyTorch versions
-                checkpoint = torch.load(checkpoint_path, map_location=device)
-            
-            # Checkpoint có thể là state_dict trực tiếp hoặc dictionary có key 'model_state_dict'
-            if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
-                model.load_state_dict(checkpoint['model_state_dict'])
-            else:
-                # Checkpoint là state_dict trực tiếp
-                model.load_state_dict(checkpoint)
-            
-            model.eval()
-            return model, True, "local"
-        except Exception as e:
-            return None, False, f"error: {str(e)}"
+    # Try loading without weights_only first (for older PyTorch versions)
+    try:
+        checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    except TypeError:
+        # Fallback for older PyTorch versions
+        checkpoint = torch.load(checkpoint_path, map_location=device)
     
-    # Nếu không có file, tải từ Google Drive
+    # Checkpoint có thể là state_dict trực tiếp hoặc dictionary có key 'model_state_dict'
+    if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+        model.load_state_dict(checkpoint['model_state_dict'])
     else:
+        # Checkpoint là state_dict trực tiếp
+        model.load_state_dict(checkpoint)
+    
+    model.eval()
+    return model
+
+
+def load_model(checkpoint_path, device, num_classes):
+    """Load model with auto-download if needed"""
+    
+    # Kiểm tra file có tồn tại không
+    if not os.path.exists(checkpoint_path):
+        # Tải từ Google Drive nếu chưa có
         download_success = download_model_from_drive()
-        if download_success:
-            # Thử load lại sau khi download
-            try:
-                model = HybridViT(num_classes=num_classes).to(device)
-                try:
-                    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
-                except TypeError:
-                    checkpoint = torch.load(checkpoint_path, map_location=device)
-                
-                # Checkpoint có thể là state_dict trực tiếp hoặc dictionary có key 'model_state_dict'
-                if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
-                    model.load_state_dict(checkpoint['model_state_dict'])
-                else:
-                    # Checkpoint là state_dict trực tiếp
-                    model.load_state_dict(checkpoint)
-                
-                model.eval()
-                return model, True, "downloaded"
-            except Exception as e:
-                return None, False, f"error: {str(e)}"
-        else:
+        if not download_success:
             return None, False, "download_failed"
+    
+    # Load model từ checkpoint (cached)
+    try:
+        model = _load_model_from_checkpoint(checkpoint_path, device, num_classes)
+        return model, True, "loaded"
+    except Exception as e:
+        return None, False, f"error: {str(e)}"
 
 
 # Load model và hiển thị thông báo
@@ -485,14 +472,11 @@ with st.spinner("Đang load model..."):
 
 # Hiển thị toast dựa trên kết quả (auto-hide sau 10s)
 if model_loaded:
-    if load_status == "local":
-        st.toast("Model đã sẵn sàng!")
-    elif load_status == "downloaded":
-        st.toast("Model đã tải và sẵn sàng!")
+    st.toast("✓ Model đã sẵn sàng!")
 elif "error" in load_status:
-    st.toast(f"{load_status.replace('error: ', '')}")
+    st.toast(f"❌ {load_status.replace('error: ', '')}")
 elif load_status == "download_failed":
-    st.toast("Không thể tải model từ Google Drive")
+    st.toast("❌ Không thể tải model từ Google Drive")
 
 
 # ========================== PREDICTION FUNCTION ==========================
