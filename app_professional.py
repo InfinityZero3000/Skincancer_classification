@@ -271,7 +271,28 @@ class HybridViT(nn.Module):
 # ========================== CONFIGURATION ==========================
 # Get the absolute path to ensure model is found
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CHECKPOINT_PATH = os.path.join(BASE_DIR, "best_model_CNN_CBAM_ViT.pt")
+
+# Try multiple possible locations for the model file
+POSSIBLE_MODEL_PATHS = [
+    os.path.join(BASE_DIR, "best_model_CNN_CBAM_ViT.pt"),
+    os.path.join(BASE_DIR, "model", "best_model_CNN_CBAM_ViT.pt"),
+    os.path.join(BASE_DIR, "best_model.pt"),
+    os.path.join(BASE_DIR, "model", "best_model.pt"),
+    "best_model_CNN_CBAM_ViT.pt",  # Relative path
+    "best_model.pt",  # Fallback
+]
+
+# Find the first existing model file
+CHECKPOINT_PATH = None
+for path in POSSIBLE_MODEL_PATHS:
+    if os.path.exists(path):
+        CHECKPOINT_PATH = path
+        break
+
+# If no model found locally, will be downloaded from Google Drive
+if CHECKPOINT_PATH is None:
+    CHECKPOINT_PATH = os.path.join(BASE_DIR, "best_model_CNN_CBAM_ViT.pt")
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_CLASSES = 9
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY", None)
@@ -1003,6 +1024,25 @@ def main():
     if not model_loaded:
         st.error(f"{t('cannot_load_model')} {CHECKPOINT_PATH}")
         st.info(t('ensure_model'))
+        
+        # Show debug info
+        with st.expander("🔍 Debug Information / Thông tin gỡ lỗi"):
+            st.write("**Searched paths / Các đường dẫn đã tìm:**")
+            for i, path in enumerate(POSSIBLE_MODEL_PATHS, 1):
+                exists = "✓" if os.path.exists(path) else "✗"
+                st.write(f"{i}. {exists} `{path}`")
+            
+            st.write("\n**Current directory / Thư mục hiện tại:**")
+            st.code(BASE_DIR)
+            
+            st.write("\n**Files in root directory / Các file trong thư mục gốc:**")
+            try:
+                files = os.listdir(BASE_DIR)
+                model_files = [f for f in files if 'model' in f.lower() or f.endswith('.pt')]
+                st.write(model_files if model_files else "No .pt files found")
+            except Exception as e:
+                st.write(f"Cannot list files: {e}")
+        
         return
     
     # File uploader - compact version with translation

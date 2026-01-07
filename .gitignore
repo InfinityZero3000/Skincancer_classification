@@ -11,7 +11,9 @@ data/
 checkpoints/
 logs/
 *.pth
-*.pt
+# *.pt  # Commented out - now tracked by Git LFS for model files
+# Keep only training checkpoints ignored, not final models
+/Script/outputs/**/*.pt
 
 # Jupyter
 .ipynb_checkpoints/
